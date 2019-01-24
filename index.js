@@ -33,6 +33,7 @@ class HandlebarsPlugin {
         this.options = Object.assign({
             entry: null,
             output: null,
+            indexFilename: '',
             data: {},
             helpers: {},
             htmlWebpackPlugin: null,
@@ -290,13 +291,22 @@ class HandlebarsPlugin {
         result = this.options.onBeforeSave(Handlebars, result, targetFilepath) || result;
 
         if (targetFilepath.includes(outputPath)) {
-            // change the destination path relative to webpacks output folder and emit it via webpack
-            targetFilepath = targetFilepath.replace(outputPath, "").replace(/^\/*/, "");
-            this.assetsToEmit[targetFilepath] = {
-                source: () => result,
-                size: () => result.length
-            };
-
+            if (sourcePath.split('/').includes(this.options.indexFilename)) {
+                console.log('outputPath', outputPath);
+                console.log('targetFilepath', targetFilepath);
+                targetFilepath = 'index.html';
+                this.assetsToEmit[targetFilepath] = {
+                    source: () => result,
+                    size: () => result.length
+                };
+            } else {
+                // change the destination path relative to webpacks output folder and emit it via webpack
+                targetFilepath = targetFilepath.replace(outputPath, "").replace(/^\/*/, "");
+                this.assetsToEmit[targetFilepath] = {
+                    source: () => result,
+                    size: () => result.length
+                };
+            }
         } else {
             // @legacy: if the filepath lies outside the actual webpack destination folder, simply write that file.
             // There is no wds-support here, because of watched assets being emitted again
