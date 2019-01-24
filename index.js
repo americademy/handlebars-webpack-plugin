@@ -292,8 +292,6 @@ class HandlebarsPlugin {
 
         if (targetFilepath.includes(outputPath)) {
             if (sourcePath.split('/').includes(this.options.indexFilename)) {
-                console.log('outputPath', outputPath);
-                console.log('targetFilepath', targetFilepath);
                 targetFilepath = 'index.html';
                 this.assetsToEmit[targetFilepath] = {
                     source: () => result,
